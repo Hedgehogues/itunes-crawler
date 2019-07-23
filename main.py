@@ -23,7 +23,8 @@ def set_config(**kwargs):
 
 
 class Scrapper:
-    def __init__(self, itunes_client):
+    def __init__(self, itunes_client, threshold_urls=3):
+        self.threshold_urls = threshold_urls
         self.client = itunes_client
         self.__it_ids = itertools.chain(
             range(6000, 6026),
@@ -33,7 +34,7 @@ class Scrapper:
             filter(lambda el: el != 13016 and el != 13022, range(13000, 13031)),
         )
         self.__it_letters = itertools.chain(
-            (item for item in '0#'),
+            (item for item in '*'),
             map(lambda el: chr(el), range(ord('A'), ord('Z')+1)),
             map(lambda el: chr(el), range(ord('a'), ord('z')+1)),
             map(lambda el: chr(el), range(ord('А'), ord('Я')+1)),
@@ -70,8 +71,9 @@ class Scrapper:
         res = list(map(lambda el: f"{el[0]}://{el[1]}{el[2]}", f))
         return res
 
-    def __get_max_page(self, letter, id_, s=1, f=10001):
-        return self.__bisect(s, f, lambda page_number: len(self.__get_urls(id_, letter, page_number)) > 0) - 1
+    def __get_max_page(self, letter, id_, s=1, f=401):
+        t = self.threshold_urls
+        return self.__bisect(s, f, lambda page_number: len(self.__get_urls(id_, letter, page_number)) > t)
 
     def __iter_pages(self, id_, letter, finish, start=1):
         urls = []
