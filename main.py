@@ -70,8 +70,8 @@ class Scrapper:
         res = list(map(lambda el: f"{el[0]}://{el[1]}{el[2]}", f))
         return res
 
-    def __get_max_page(self, letter, id_, s=1, f=201):
-        return self.__bisect(s, f, lambda page_number: len(self.__get_urls(id_, letter, page_number)) > 0)
+    def __get_max_page(self, letter, id_, s=1, f=10001):
+        return self.__bisect(s, f, lambda page_number: len(self.__get_urls(id_, letter, page_number)) > 0) - 1
 
     def __iter_pages(self, id_, letter, finish, start=1):
         urls = []
